@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan')
 const app = express();
 
 app.use(express.json())
@@ -26,12 +27,13 @@ let persons = [
     }
 ]
 
+app.use(morgan('tiny'))
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
 
-app.get('/info', (request,response) => {
+app.get('/info', (request, response) => {
     response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)
 })
 
@@ -81,7 +83,7 @@ app.post('/api/persons', (request, response) => {
 
     const personEx = persons.find(person => person.name == body.name)
 
-    if(personEx) {
+    if (personEx) {
         return response.status(400).json({
             error: 'name must be unique'
         })
@@ -97,6 +99,12 @@ app.post('/api/persons', (request, response) => {
 
     response.json(person)
 })
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {
