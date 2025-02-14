@@ -1,10 +1,11 @@
 const express = require('express');
 const morgan = require('morgan')
 const app = express();
-const cors =require('cors')
+const cors = require('cors')
 
 app.use(express.json())
 app.use(cors())
+app.use(express.static('dist'))
 
 let persons = [
     {
@@ -33,9 +34,6 @@ morgan.token('body',(req, res)  => JSON.stringify(req.body))
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
-})
 
 app.get('/info', (request, response) => {
     response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)
