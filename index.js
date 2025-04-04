@@ -9,9 +9,7 @@ app.use(express.json())
 app.use(cors())
 app.use(express.static('dist'))
 
-let persons = []
-
-morgan.token('body',(req, res)  => JSON.stringify(req.body))
+morgan.token('body', (req, res) => JSON.stringify(req.body))
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
@@ -56,14 +54,6 @@ app.post('/api/persons', (request, response, next) => {
         })
     }
 
-    /*const personEx = persons.find(person => person.name == body.name)
-
-    if (personEx) {
-        return response.status(400).json({
-            error: 'name must be unique'
-        })
-    }*/
-
     const person = new Person({
         "name": body.name,
         "number": body.number,
@@ -71,6 +61,13 @@ app.post('/api/persons', (request, response, next) => {
 
     person.save()
         .then(savedPerson => response.json(savedPerson))
+        .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+    Person
+        .findByIdAndUpdate(req.params.id, { name: req.body.name, number: req.body.number }, { new: true, runValidators: true })
+        .then(resp => res.json(resp))
         .catch(error => next(error))
 })
 
